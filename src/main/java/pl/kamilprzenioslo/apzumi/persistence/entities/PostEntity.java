@@ -20,7 +20,7 @@ import org.springframework.data.domain.Persistable;
 @ToString
 @Entity
 @Table(name = "post")
-@SQLDelete(sql = "UPDATE post SET deleted=true WHERE id=?")
+@SQLDelete(sql = "UPDATE post SET deleted=true WHERE id=? and version = ?")
 @Where(clause = "deleted = false")
 public class PostEntity implements Persistable<Integer> {
 

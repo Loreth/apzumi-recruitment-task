@@ -20,12 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import pl.kamilprzenioslo.apzumi.dtos.Post;
+import pl.kamilprzenioslo.apzumi.persistence.repositories.PostRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -35,7 +35,7 @@ import pl.kamilprzenioslo.apzumi.dtos.Post;
 })
 class PostControllerIntegrationTest {
   @Autowired private WebTestClient webTestClient;
-  @Autowired private JdbcTemplate jdbcTemplate;
+  @Autowired private PostRepository postRepository;
 
   @FlywayTest
   @BeforeEach
@@ -93,14 +93,11 @@ class PostControllerIntegrationTest {
   }
 
   @Test
-  void givenExistentPostId_WhenDelete_ThenIsProperlySoftDeleted() {
+  void givenExistentPostId_WhenDelete_ThenIsDeletedAndReturns200Status() {
     webTestClient.delete().uri("/posts/{id}", 1).exchange().expectStatus().isOk();
-    // direct query, as JPA shouldn't see the post anymore
-    boolean deleted =
-        jdbcTemplate.queryForObject("SELECT deleted FROM post WHERE id=1", Boolean.class);
+    boolean deleted = !postRepository.existsById(1);
 
     assertTrue(deleted);
-    webTestClient.get().uri("/posts/{id}", 1).exchange().expectStatus().isNotFound();
   }
 
   @Test

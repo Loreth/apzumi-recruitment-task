@@ -9,6 +9,7 @@ import org.mapstruct.MappingTarget;
 
 /**
  * Basic mapper for conversion between a DTO and an Entity.
+ *
  * @param <D> type of DTO
  * @param <E> type of Entity
  */

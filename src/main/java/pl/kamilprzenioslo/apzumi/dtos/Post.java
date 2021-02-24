@@ -2,10 +2,14 @@ package pl.kamilprzenioslo.apzumi.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.validation.constraints.Null;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import pl.kamilprzenioslo.apzumi.validation.PatchRequest;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Post {
 
   @JsonIgnore private Integer userId;

@@ -9,5 +9,4 @@ public class ApzumiApplication {
   public static void main(String[] args) {
     SpringApplication.run(ApzumiApplication.class, args);
   }
-
 }

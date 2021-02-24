@@ -12,7 +12,7 @@ import org.hibernate.annotations.Where;
 import org.springframework.data.domain.Persistable;
 
 /**
- * This entity implements soft delete due to a business requirement of not updating deleted posts,
+ * Post entity implements soft delete due to a business requirement of not updating deleted posts,
  * meanwhile preserving the ability to handle potential new posts.
  */
 @Getter

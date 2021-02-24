@@ -1,6 +1,7 @@
 package pl.kamilprzenioslo.apzumi.controllers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
@@ -103,10 +104,49 @@ class PostControllerIntegrationTest {
   }
 
   @Test
-  void givenCorrectDtoWithChanges_whenPatch_ThenPatchAndReturnPost() {
+  void givenCorrectDtoWithChanges_WhenPatch_ThenPatchAndReturnPost() {
+    Post patchPost = new Post();
+    patchPost.setBody("fancy new body");
+    patchPost.setTitle("upgraded title");
+
+    webTestClient
+        .patch()
+        .uri("/posts/{id}", 5)
+        .accept(MediaType.APPLICATION_JSON)
+        .bodyValue(patchPost)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(Post.class)
+        .consumeWith(
+            result -> {
+              Post post = result.getResponseBody();
+              assertNotNull(post);
+              assertEquals(5, post.getId());
+              assertEquals("fancy new body", post.getBody());
+              assertEquals("upgraded title", post.getTitle());
+            });
+  }
+
+  @Test
+  void givenDtoWithIdChange_WhenPatch_ThenReturn400Status() {
+    Post patchPost = new Post();
+    patchPost.setId(3);
+
+    webTestClient
+        .patch()
+        .uri("/posts/{id}", 1)
+        .bodyValue(patchPost)
+        .exchange()
+        .expectStatus()
+        .isBadRequest();
+  }
+
+  @Test
+  void givenTitleFragment_WhenGet_ThenReturnResultsContainingTitle() {
     webTestClient
         .get()
-        .uri("/posts")
+        .uri(uriBuilder -> uriBuilder.path("/posts").queryParam("title", "re").build())
         .accept(MediaType.APPLICATION_JSON)
         .exchange()
         .expectStatus()
@@ -114,11 +154,14 @@ class PostControllerIntegrationTest {
         .expectBodyList(Post.class)
         .consumeWith(
             result -> {
-              List<Post> posts = result.getResponseBody();
-              assertThat(posts, hasSize(3));
-              assertThat(
-                  posts.stream().map(Post::getUserId).collect(Collectors.toList()),
-                  everyItem(nullValue()));
+              List<Post> foundPosts = result.getResponseBody();
+              assertNotNull(foundPosts);
+              assertThat(foundPosts, hasSize(2));
+
+              List<String> postTitles =
+                  foundPosts.stream().map(Post::getTitle).collect(Collectors.toList());
+
+              assertThat(postTitles, everyItem(containsString("re")));
             });
   }
 }

@@ -22,7 +22,7 @@ class PostMapperTest {
   }
 
   @Test
-  void patchWithSingleChangePatchesCorrectly() {
+  void givenSingleChange_WhenPatch_ThenPatchCorrectly() {
     Post patchPost = new Post();
     patchPost.setTitle("new title");
 
@@ -35,7 +35,7 @@ class PostMapperTest {
   }
 
   @Test
-  void patchWithNoChangesDoesntChangeAnything() {
+  void givenNoChanges_WhenPatch_ThenNothingIsChanged() {
     Post patchPost = new Post();
 
     postMapper.patchEntity(patchPost, postEntity);
@@ -47,7 +47,7 @@ class PostMapperTest {
   }
 
   @Test
-  void patchWithAllValuesChangedPatchesCorrectly() {
+  void givenAllValuesChanged_whenPatch_ThenPatchCorrectly() {
     Post patchPost = new Post();
     patchPost.setId(20);
     patchPost.setUserId(10);

@@ -6,6 +6,7 @@ import static pl.kamilprzenioslo.apzumi.config.ResourceIdentifiers.POST;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.kamilprzenioslo.apzumi.dtos.Post;
 import pl.kamilprzenioslo.apzumi.services.PostService;
+import pl.kamilprzenioslo.apzumi.validation.PatchRequest;
 
 @RequiredArgsConstructor
 @RequestMapping(POST)
@@ -32,12 +34,12 @@ public class PostController {
   }
 
   @GetMapping
-  public List<Post> getAll(@RequestParam(required = false) String title) {
+  public List<Post> getAll(@RequestParam(required = false, defaultValue = "") String title) {
     return service.findAll(title);
   }
 
   @PatchMapping(ID)
-  public Post patch(@PathVariable int id, @RequestBody Post post) {
+  public Post patch(@PathVariable int id, @Validated(PatchRequest.class) @RequestBody Post post) {
     return service.patch(id, post);
   }
 

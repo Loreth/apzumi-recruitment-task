@@ -14,11 +14,7 @@ class PostMapperTest {
 
   @BeforeEach
   void setUp() {
-    postEntity = new PostEntity();
-    postEntity.setId(1);
-    postEntity.setUserId(2);
-    postEntity.setTitle("a title");
-    postEntity.setBody("some text");
+    postEntity = new PostEntity(1, 2, "a title", "some text");
   }
 
   @Test
@@ -28,8 +24,8 @@ class PostMapperTest {
 
     postMapper.patchEntity(patchPost, postEntity);
 
-    assertEquals(1, postEntity.getId());
-    assertEquals(2, postEntity.getUserId());
+    assertEquals(1, postEntity.getUserId());
+    assertEquals(2, postEntity.getId());
     assertEquals("new title", postEntity.getTitle());
     assertEquals("some text", postEntity.getBody());
   }
@@ -40,24 +36,20 @@ class PostMapperTest {
 
     postMapper.patchEntity(patchPost, postEntity);
 
-    assertEquals(1, postEntity.getId());
-    assertEquals(2, postEntity.getUserId());
+    assertEquals(1, postEntity.getUserId());
+    assertEquals(2, postEntity.getId());
     assertEquals("a title", postEntity.getTitle());
     assertEquals("some text", postEntity.getBody());
   }
 
   @Test
   void givenAllValuesChanged_whenPatch_ThenPatchCorrectly() {
-    Post patchPost = new Post();
-    patchPost.setId(20);
-    patchPost.setUserId(10);
-    patchPost.setTitle("new title");
-    patchPost.setBody("NEW body!");
+    Post patchPost = new Post(10, 20, "new title", "NEW body!");
 
     postMapper.patchEntity(patchPost, postEntity);
 
-    assertEquals(20, postEntity.getId());
     assertEquals(10, postEntity.getUserId());
+    assertEquals(20, postEntity.getId());
     assertEquals("new title", postEntity.getTitle());
     assertEquals("NEW body!", postEntity.getBody());
   }

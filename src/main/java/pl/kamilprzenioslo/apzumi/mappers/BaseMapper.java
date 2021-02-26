@@ -17,8 +17,6 @@ public interface BaseMapper<D, E> {
 
   D mapToDto(E entity);
 
-  E mapToEntity(D dto);
-
   List<D> mapToDtos(Collection<E> entities);
 
   @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)

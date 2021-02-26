@@ -26,4 +26,7 @@ public interface PostService {
   Post patch(int id, Post post);
 
   void deleteById(int id);
+
+  /** Fetches posts from public API and saves them to the database, replacing all existing posts */
+  void fetchAndReplaceAllPosts();
 }

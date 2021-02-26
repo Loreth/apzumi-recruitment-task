@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Sort;
-import pl.kamilprzenioslo.apzumi.dtos.Post;
 import pl.kamilprzenioslo.apzumi.persistence.entities.PostEntity;
 
 @DataJpaTest
@@ -18,13 +17,13 @@ class PostRepositoryTest {
 
   @Test
   void givenPosts_WhenUpdateUnmodifiedPosts_ThenUpdateCorrectly() {
-    List<Post> posts =
+    List<PostEntity> posts =
         List.of(
-            new Post(1, 1, "aaa", "AAA", 0, false),
-            new Post(1, 2, "bbb", "BBB", 0, false),
-            new Post(555, 3, "ccc", "CCC", 0, false),
-            new Post(2, 4, "ddd", "DDD", 0, false),
-            new Post(3, 5, "eee", "EEE", 0, false));
+            new PostEntity(1, 1, "aaa", "AAA"),
+            new PostEntity(1, 2, "bbb", "BBB"),
+            new PostEntity(555, 3, "ccc", "CCC"),
+            new PostEntity(2, 4, "ddd", "DDD"),
+            new PostEntity(3, 5, "eee", "EEE"));
 
     posts.forEach(postRepository::updatePostIfUnmodified);
     List<PostEntity> postEntities = postRepository.findAll(Sort.by("id"));

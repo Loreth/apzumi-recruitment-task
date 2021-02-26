@@ -1,15 +1,19 @@
 package pl.kamilprzenioslo.apzumi.controllers;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.flywaydb.test.FlywayTestExecutionListener;
@@ -28,7 +32,7 @@ import pl.kamilprzenioslo.apzumi.dtos.Post;
 import pl.kamilprzenioslo.apzumi.persistence.repositories.PostRepository;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "scheduling.enabled=true")
 @TestExecutionListeners({
   DependencyInjectionTestExecutionListener.class,
   FlywayTestExecutionListener.class
@@ -101,6 +105,11 @@ class PostControllerIntegrationTest {
   }
 
   @Test
+  void givenNonExistentPostId_WhenDelete_ThenReturn404Status() {
+    webTestClient.delete().uri("/posts/{id}", 222).exchange().expectStatus().isNotFound();
+  }
+
+  @Test
   void givenCorrectDtoWithChanges_WhenPatch_ThenPatchAndReturnPost() {
     Post patchPost = new Post();
     patchPost.setBody("fancy new body");
@@ -140,7 +149,7 @@ class PostControllerIntegrationTest {
   }
 
   @Test
-  void givenTitleFragment_WhenGet_ThenReturnResultsContainingTitle() {
+  void givenTitleFragment_WhenGet_ThenReturnPostsContainingTitle() {
     webTestClient
         .get()
         .uri(uriBuilder -> uriBuilder.path("/posts").queryParam("title", "re").build())
@@ -160,5 +169,27 @@ class PostControllerIntegrationTest {
 
               assertThat(postTitles, everyItem(containsString("re")));
             });
+  }
+
+  @Test
+  void whenFetchPosts_ThenReturn202StatusAndFetchAndReplaceAllPosts() {
+    webTestClient
+        .post()
+        .uri(uriBuilder -> uriBuilder.path("/posts/fetch-requests").build())
+        .accept(MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus()
+        .isAccepted();
+
+    await().atMost(Duration.ofSeconds(3)).until(() -> postRepository.count(), equalTo(100L));
+    await()
+        .atMost(Duration.ofSeconds(3))
+        .until(() -> postRepository.findById(1).orElseThrow().getTitle(), not("great"));
+    await()
+        .atMost(Duration.ofSeconds(3))
+        .until(() -> postRepository.findById(2).orElseThrow().getTitle(), not("even better"));
+    await()
+        .atMost(Duration.ofSeconds(3))
+        .until(() -> postRepository.findById(5).orElseThrow().getTitle(), not("Hello there!"));
   }
 }

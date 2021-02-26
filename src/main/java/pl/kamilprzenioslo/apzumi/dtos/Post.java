@@ -1,6 +1,7 @@
 package pl.kamilprzenioslo.apzumi.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import javax.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,13 +13,12 @@ import pl.kamilprzenioslo.apzumi.validation.PatchRequest;
 @AllArgsConstructor
 public class Post {
 
-  @JsonIgnore private Integer userId;
+  @JsonProperty(access = Access.WRITE_ONLY)
+  private Integer userId;
 
   @Null(groups = PatchRequest.class)
   private Integer id;
 
   private String title;
   private String body;
-  @JsonIgnore private int version;
-  @JsonIgnore private boolean deleted;
 }

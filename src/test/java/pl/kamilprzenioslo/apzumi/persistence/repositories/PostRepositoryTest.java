@@ -13,6 +13,7 @@ import pl.kamilprzenioslo.apzumi.persistence.entities.PostEntity;
 
 @DataJpaTest
 class PostRepositoryTest {
+
   @Autowired PostRepository postRepository;
 
   @Test

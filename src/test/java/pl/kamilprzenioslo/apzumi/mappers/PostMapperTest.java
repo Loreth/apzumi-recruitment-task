@@ -9,6 +9,7 @@ import pl.kamilprzenioslo.apzumi.dtos.Post;
 import pl.kamilprzenioslo.apzumi.persistence.entities.PostEntity;
 
 class PostMapperTest {
+
   private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
   private PostEntity postEntity;
 

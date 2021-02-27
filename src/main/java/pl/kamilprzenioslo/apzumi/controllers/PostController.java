@@ -28,6 +28,7 @@ import pl.kamilprzenioslo.apzumi.validation.PatchRequest;
 @RequestMapping(POST)
 @RestController
 public class PostController {
+
   private final PostService service;
 
   @GetMapping(ID)

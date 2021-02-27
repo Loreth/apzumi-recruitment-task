@@ -19,19 +19,19 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "post")
 public class PostEntity implements Persistable<Integer> {
 
-  public PostEntity(int userId, Integer id, String title, String body) {
-    this.userId = userId;
-    this.id = id;
-    this.title = title;
-    this.body = body;
-  }
-
   private int userId;
   @Id private Integer id;
   private String title;
   private String body;
   @Version private Integer version;
   private boolean modifiedByUser;
+
+  public PostEntity(int userId, Integer id, String title, String body) {
+    this.userId = userId;
+    this.id = id;
+    this.title = title;
+    this.body = body;
+  }
 
   @Override
   public boolean isNew() {

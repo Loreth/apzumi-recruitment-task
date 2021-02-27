@@ -22,6 +22,7 @@ import reactor.core.publisher.Flux;
 @Service
 @Slf4j
 public class PostServiceImpl implements PostService {
+
   private static final String ENTITY_NOT_FOUND_MESSAGE = "Entity does not exist with id=";
   private final PostRepository repository;
   private final PostMapper mapper;

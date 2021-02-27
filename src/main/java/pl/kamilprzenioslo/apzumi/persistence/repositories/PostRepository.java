@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.kamilprzenioslo.apzumi.persistence.entities.PostEntity;
 
 public interface PostRepository extends JpaRepository<PostEntity, Integer> {
+
   List<PostEntity> findByTitleContaining(String title);
 
   @Transactional

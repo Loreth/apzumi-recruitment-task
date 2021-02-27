@@ -38,6 +38,7 @@ import pl.kamilprzenioslo.apzumi.persistence.repositories.PostRepository;
   FlywayTestExecutionListener.class
 })
 class PostControllerIntegrationTest {
+
   @Autowired private WebTestClient webTestClient;
   @Autowired private PostRepository postRepository;
 

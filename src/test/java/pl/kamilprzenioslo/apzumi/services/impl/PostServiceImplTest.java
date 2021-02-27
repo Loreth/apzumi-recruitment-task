@@ -30,6 +30,7 @@ import pl.kamilprzenioslo.apzumi.persistence.repositories.PostRepository;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceImplTest {
+
   private static final MockWebServer mockWebServer = new MockWebServer();
   private final ObjectMapper objectMapper = new ObjectMapper();
   @Mock private PostRepository postRepository;

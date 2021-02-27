@@ -22,7 +22,7 @@ H2 należy zainstalować (http://www.h2database.com/html/main.html)
 i za pośrednictwem H2 Database Engine utworzyć nową bazę i uruchomić ją,
 logując się w H2 console.
 
-##### Należy zdefiniować dane do połączenia z bazą, tworząc zmienne środowiskowe:
+#### Należy zdefiniować dane do połączenia z bazą, tworząc zmienne środowiskowe:
 
 * APZUMI_DATASOURCE_URL
 * APZUMI_DATASOURCE_USERNAME

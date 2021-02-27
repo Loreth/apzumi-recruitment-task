@@ -110,6 +110,19 @@ class PostControllerIntegrationTest {
   }
 
   @Test
+  void givenNonExistentPostId_WhenPatch_ThenReturn404Status() {
+    Post patchPost = new Post();
+    patchPost.setTitle("new title");
+    webTestClient
+        .patch()
+        .uri("/posts/{id}", 222)
+        .bodyValue(patchPost)
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+  }
+
+  @Test
   void givenCorrectDtoWithChanges_WhenPatch_ThenPatchAndReturnPost() {
     Post patchPost = new Post();
     patchPost.setBody("fancy new body");

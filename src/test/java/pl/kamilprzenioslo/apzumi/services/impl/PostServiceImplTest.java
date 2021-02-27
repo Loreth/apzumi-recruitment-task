@@ -4,11 +4,13 @@ import static io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
@@ -21,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
+import pl.kamilprzenioslo.apzumi.dtos.Post;
 import pl.kamilprzenioslo.apzumi.mappers.PostMapper;
 import pl.kamilprzenioslo.apzumi.persistence.entities.PostEntity;
 import pl.kamilprzenioslo.apzumi.persistence.repositories.PostRepository;
@@ -58,6 +61,17 @@ class PostServiceImplTest {
   }
 
   @Test
+  void givenExistentPost_WhenPatch_ThenEntityIsMarkedAsModifiedByUser() {
+    Post postWithChanges = new Post(null, null, "c", "d");
+    PostEntity postEntity = new PostEntity(1, 1, "a", "b");
+
+    when(postRepository.findById(1)).thenReturn(Optional.of(postEntity));
+    postService.patch(1, postWithChanges);
+
+    verify(postRepository).save(argThat(PostEntity::isModifiedByUser));
+  }
+
+  @Test
   void givenPosts_WhenFetchAndUpdateUnmodifiedPosts_ThenAllPostsGetPassedToRepository()
       throws JsonProcessingException {
     MockResponse mockResponse =
@@ -69,16 +83,18 @@ class PostServiceImplTest {
 
     postService.fetchAndUpdateUnmodifiedPosts();
 
-    verify(postRepository, timeout(2000).times(5)).updatePostIfUnmodified(argThat(publicApiPosts::contains));
+    verify(postRepository, timeout(2000).times(5))
+        .updatePostIfUnmodified(argThat(publicApiPosts::contains));
   }
 
   @Test
-  void givenPosts_WhenFetchAndReplaceAllPosts_ThenAllPostsGetReplaced() throws JsonProcessingException {
+  void givenPosts_WhenFetchAndReplaceAllPosts_ThenAllPostsGetReplaced()
+      throws JsonProcessingException {
     MockResponse mockResponse =
-      new MockResponse()
-          .setResponseCode(HttpStatus.OK.value())
-          .setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
-          .setBody(objectMapper.writeValueAsString(publicApiPosts));
+        new MockResponse()
+            .setResponseCode(HttpStatus.OK.value())
+            .setHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+            .setBody(objectMapper.writeValueAsString(publicApiPosts));
     mockWebServer.enqueue(mockResponse);
 
     postService.fetchAndReplaceAllPosts();

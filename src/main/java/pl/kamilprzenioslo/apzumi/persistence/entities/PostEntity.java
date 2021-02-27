@@ -52,6 +52,6 @@ public class PostEntity implements Persistable<Integer> {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id);
+    return Objects.hash(userId, id);
   }
 }

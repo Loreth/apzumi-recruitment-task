@@ -44,7 +44,11 @@ public class PostController {
 
   @PatchMapping(ID)
   public Post patch(@PathVariable int id, @Validated(PatchRequest.class) @RequestBody Post post) {
-    return service.patch(id, post);
+    try {
+      return service.patch(id, post);
+    } catch (EntityNotFoundException ex) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
   }
 
   @DeleteMapping(ID)

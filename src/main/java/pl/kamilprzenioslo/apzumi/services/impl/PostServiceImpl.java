@@ -22,6 +22,7 @@ import reactor.core.publisher.Flux;
 @Service
 @Slf4j
 public class PostServiceImpl implements PostService {
+  private static final String ENTITY_NOT_FOUND_MESSAGE = "Entity does not exist with id=";
   private final PostRepository repository;
   private final PostMapper mapper;
   private final WebClient webClient;
@@ -47,7 +48,12 @@ public class PostServiceImpl implements PostService {
 
   @Override
   public Post patch(int id, Post post) {
-    PostEntity postEntity = repository.findById(id).orElseThrow();
+    PostEntity postEntity =
+        repository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND_MESSAGE + id));
+
+    postEntity.setModifiedByUser(true);
     mapper.patchEntity(post, postEntity);
     repository.save(postEntity);
 
@@ -59,19 +65,15 @@ public class PostServiceImpl implements PostService {
     if (repository.existsById(id)) {
       repository.deleteById(id);
     } else {
-      throw new EntityNotFoundException("Entity with id " + id + " does not exist");
+      throw new EntityNotFoundException(ENTITY_NOT_FOUND_MESSAGE + id);
     }
   }
 
   @Async
-  @Scheduled(cron = "${scheduling.post-update-cron}")
+  @Scheduled(cron = "${scheduling.post-update.cron}")
   public void fetchAndUpdateUnmodifiedPosts() {
     Flux<PostEntity> postFlux =
-        webClient
-            .get()
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve()
-            .bodyToFlux(PostEntity.class);
+        webClient.get().accept(MediaType.APPLICATION_JSON).retrieve().bodyToFlux(PostEntity.class);
 
     log.debug("Updating unmodified posts");
     postFlux.subscribe(repository::updatePostIfUnmodified);

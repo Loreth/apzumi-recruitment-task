@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.kamilprzenioslo.apzumi.dtos.Post;
-import pl.kamilprzenioslo.apzumi.exceptions.EntityNotFoundException;
 import pl.kamilprzenioslo.apzumi.services.PostService;
 import pl.kamilprzenioslo.apzumi.validation.PatchRequest;
 
@@ -45,20 +44,12 @@ public class PostController {
 
   @PatchMapping(ID)
   public Post patch(@PathVariable int id, @Validated(PatchRequest.class) @RequestBody Post post) {
-    try {
       return service.patch(id, post);
-    } catch (EntityNotFoundException ex) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
   }
 
   @DeleteMapping(ID)
   public void delete(@PathVariable int id) {
-    try {
       service.deleteById(id);
-    } catch (EntityNotFoundException ex) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
   }
 
   @ResponseStatus(HttpStatus.ACCEPTED)
